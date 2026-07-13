@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -418,11 +418,11 @@ html[data-theme="light"] .theme-knob{transform:translateX(15px);background:var(-
   <div class="cp-sec">
     <div class="cp-sec-lbl">Activity data</div>
     <div class="cp-item"><input type="checkbox" id="col-wbs" checked onchange="toggleCol('wbs')"><label for="col-wbs">WBS</label></div>
-    <div class="cp-item"><input type="checkbox" id="col-status" checked onchange="toggleCol('status')"><label for="col-status">Status</label></div>
+    <div class="cp-item"><input type="checkbox" id="col-status" onchange="toggleCol('status')"><label for="col-status">Status</label></div>
     <div class="cp-item"><input type="checkbox" id="col-start" checked onchange="toggleCol('start')"><label for="col-start">Planned Start</label></div>
     <div class="cp-item"><input type="checkbox" id="col-finish" checked onchange="toggleCol('finish')"><label for="col-finish">Planned Finish</label></div>
     <div class="cp-item"><input type="checkbox" id="col-dur" checked onchange="toggleCol('dur')"><label for="col-dur">Duration</label></div>
-    <div class="cp-item"><input type="checkbox" id="col-pct" checked onchange="toggleCol('pct')"><label for="col-pct">% Complete</label></div>
+    <div class="cp-item"><input type="checkbox" id="col-pct" onchange="toggleCol('pct')"><label for="col-pct">% Complete</label></div>
   </div>
   <div class="cp-sec" style="border-top:1px solid var(--border);">
     <div class="cp-sec-lbl">Logic</div>
@@ -474,8 +474,8 @@ const colDefs=[
   {id:'dur',   label:'Duration',        w:64,  show:true},
   {id:'start', label:'Planned start',   w:88,  show:true},
   {id:'finish',label:'Planned finish',  w:88,  show:true},
-  {id:'status',label:'Status',          w:75,  show:true},
-  {id:'pct',   label:'% done',          w:70,  show:true},
+  {id:'status',label:'Status',          w:75,  show:false},
+  {id:'pct',   label:'% done',          w:70,  show:false},
   {id:'preds', label:'Predecessors',    w:160, show:false},
   {id:'succs', label:'Successors',      w:160, show:false},
 ];
