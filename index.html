@@ -136,7 +136,7 @@ html[data-theme="light"] .theme-knob{transform:translateX(15px);background:var(-
 .ch-rh{position:absolute;right:0;top:0;bottom:0;width:4px;cursor:col-resize;z-index:5;}
 .ch-rh:hover{background:var(--accent);}
 /* special: row-num column */
-.ch-num{width:36px;min-width:36px;flex-shrink:0;border-right:1px solid var(--border2);cursor:default;background:var(--bg3);}
+.ch-num{width:76px;min-width:76px;flex-shrink:0;border-right:1px solid var(--border2);cursor:default;background:var(--bg3);}
 .ch-num:hover{background:var(--bg3);color:var(--text3);}
 
 /* rows */
@@ -148,8 +148,8 @@ html[data-theme="light"] .theme-knob{transform:translateX(15px);background:var(-
 .tr.highlighted{background:rgba(59,130,246,.08)!important;}
 /* cells */
 .td{display:flex;align-items:center;border-right:1px solid var(--border);padding:0 5px;overflow:hidden;white-space:nowrap;flex-shrink:0;font-size:12px;}
-.td-num{width:36px;min-width:36px;flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);justify-content:flex-end;border-right:1px solid var(--border2);background:var(--bg3);padding-right:6px;}
-.td-ctrl{display:flex;align-items:center;width:40px;min-width:40px;flex-shrink:0;border-right:1px solid var(--border);}
+.td-num{display:flex;align-items:center;width:76px;min-width:76px;flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);border-right:1px solid var(--border2);background:var(--bg3);padding:0 6px 0 4px;}
+.td-num .td-num-n{margin-left:auto;}
 .td-r{justify-content:flex-end;text-align:right;}
 .td-toggle{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:var(--text3);font-size:9px;transition:transform .15s;border-radius:3px;}
 .td-toggle:hover{color:var(--text);background:var(--bg4);}
@@ -625,10 +625,8 @@ function buildDateRange(){
 // ── TABLE HEADER ──────────────────────────────────────
 function renderHeader(){
   const head=document.getElementById('tbl-head');head.innerHTML='';
-  // Fixed: row-num header
+  // Fixed: row-num header (also holds the toggle/icon space)
   const rn=document.createElement('div');rn.className='ch ch-num';rn.textContent='#';head.appendChild(rn);
-  // Fixed: toggle+icon space header
-  const sp=document.createElement('div');sp.className='ch';sp.style.cssText='width:40px;min-width:40px;flex-shrink:0;cursor:default;border-right:1px solid var(--border);';head.appendChild(sp);
   // Data columns
   const rightAlign=['start','finish','dur','pct'];
   colDefs.forEach(c=>{
@@ -663,13 +661,13 @@ function makeWBSRow(row,i){
   const{node,depth,r}=row;
   const isLeaf=node.children.length===0&&node._tasks.length===0,isOpen=expandedWBS.has(node.wbs_id);
   const div=document.createElement('div');div.className='tr tr-wbs';div.dataset.idx=i;
-  // row num — fixed, never indented
-  const rn=document.createElement('div');rn.className='td td-num';rn.textContent=i+1;div.appendChild(rn);
-  // toggle + icon — fixed width, depth indent applied here inside the name cell only
+  // row num + toggle + icon — fixed, never indented
+  const rn=document.createElement('div');rn.className='td td-num';
   const tog=document.createElement('span');tog.className='td-toggle'+(isLeaf?' leaf':isOpen?' open':'');tog.innerHTML='&#9654;';
   tog.addEventListener('click',e=>{e.stopPropagation();toggleWBS(node.wbs_id);});
   const ico=document.createElement('span');ico.className='td-icon';ico.innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>`;
-  const ii=document.createElement('div');ii.className='td-ctrl';ii.appendChild(tog);ii.appendChild(ico);div.appendChild(ii);
+  const numSpan=document.createElement('span');numSpan.className='td-num-n';numSpan.textContent=i+1;
+  rn.appendChild(tog);rn.appendChild(ico);rn.appendChild(numSpan);div.appendChild(rn);
   colDefs.forEach(c=>{
     if(!c.show)return;
     const td=document.createElement('div');td.className='td';td.dataset.colId=c.id;
@@ -696,13 +694,13 @@ function makeTaskRow(row,i){
   const{task,depth}=row;
   const isMile=isMilestone(task);
   const div=document.createElement('div');div.className='tr tr-task';div.dataset.idx=i;
-  // row num — fixed, never indented
-  const rn=document.createElement('div');rn.className='td td-num';rn.textContent=i+1;div.appendChild(rn);
-  // toggle placeholder + icon — fixed
+  // row num + toggle placeholder + icon — fixed
+  const rn=document.createElement('div');rn.className='td td-num';
   const tog=document.createElement('span');tog.className='td-toggle leaf';
   const ico=document.createElement('span');ico.className='td-icon';
   ico.innerHTML=isMile?`<svg viewBox="0 0 24 24"><polygon points="12,2 22,12 12,22 2,12" stroke-width="1.5"/></svg>`:`<svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>`;
-  const ii=document.createElement('div');ii.className='td-ctrl';ii.appendChild(tog);ii.appendChild(ico);div.appendChild(ii);
+  const numSpan=document.createElement('span');numSpan.className='td-num-n';numSpan.textContent=i+1;
+  rn.appendChild(tog);rn.appendChild(ico);rn.appendChild(numSpan);div.appendChild(rn);
   colDefs.forEach(c=>{
     if(!c.show)return;
     const td=document.createElement('div');td.className='td';td.dataset.colId=c.id;
