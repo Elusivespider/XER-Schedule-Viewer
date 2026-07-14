@@ -207,30 +207,19 @@ html[data-theme="light"] .theme-knob{transform:translateX(15px);background:var(-
 .cp-item label{flex:1;font-size:11px;color:var(--text2);cursor:pointer;}
 .cp-item input{width:12px;height:12px;accent-color:var(--accent);cursor:pointer;}
 
-/* ── WBS FILTER MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);width:360px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 16px 48px var(--shadow);}
-.modal-head{padding:14px 18px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.modal-head h2{font-size:15px;font-weight:600;}
-.modal-close{background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px;line-height:1;padding:0;}
-.modal-close:hover{color:var(--text);}
-.modal-search{padding:10px 14px;border-bottom:1px solid var(--border);}
+/* ── WBS FOLDER DROPDOWN ── */
+.wbs-dropdown{position:fixed;width:320px;max-height:400px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-lg);z-index:400;box-shadow:0 8px 32px var(--shadow);display:flex;flex-direction:column;overflow:hidden;}
+.wbs-dropdown.hidden{display:none;}
+.modal-search{padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .modal-search input{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:var(--r);padding:6px 10px;font-family:'Inter',sans-serif;font-size:12px;outline:none;}
 .modal-search input:focus{border-color:var(--accent);}
 .modal-list{overflow-y:auto;flex:1;padding:6px 0;}
 .mli{display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;transition:background .08s;}
 .mli:hover{background:var(--bg3);}
-.mli.sel{background:rgba(59,130,246,.08);}
-.mli input{width:13px;height:13px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.mli.sel{background:rgba(59,130,246,.08);color:var(--accent);}
 .mli-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;}
 .mli-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;}
 .mli-cnt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);flex-shrink:0;}
-.modal-foot{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;}
-.mf-btn{flex:1;padding:7px;font-size:12px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);border-radius:var(--r);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
-.mf-btn:hover{background:var(--bg4);color:var(--text);}
-.mf-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500;}
-.mf-btn.primary:hover{background:#2563eb;}
 
 /* ── TOOLTIP ── */
 #tip{position:fixed;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r);padding:9px 12px;font-size:11px;pointer-events:none;z-index:999;display:none;min-width:190px;max-width:250px;line-height:1.6;box-shadow:0 8px 24px var(--shadow);}
@@ -281,7 +270,7 @@ html[data-theme="light"] .theme-knob{transform:translateX(15px);background:var(-
     <div class="l-glow-3"></div>
 
     <div class="l-tag"><span class="l-tag-dot"></span>Primavera P6 · XER Schedule Viewer</div>
-    <h1>View your P6<br/>schedule instantly</h1>
+    <h1>View your P6<br/>schedule</h1>
     <p class="l-sub">Upload any Primavera .xer file and explore your program — WBS tree, Gantt chart, logic links, milestones. Runs entirely in your browser.</p>
 
     <div class="l-card">
@@ -369,7 +358,7 @@ html[data-theme="light"] .theme-knob{transform:translateX(15px);background:var(-
     </select>
     <select class="tl-select" id="t-type" onchange="applyFilters()"><option value="">All types</option></select>
     <!-- WBS folder filter -->
-    <button class="wbs-pill" id="wbs-pill-btn" onclick="openWBSModal()">
+    <button class="wbs-pill" id="wbs-pill-btn" onclick="toggleWBSDropdown()">
       <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
       <span id="wbs-pill-lbl">All folders</span>
       <svg viewBox="0 0 24 24" style="width:9px;height:9px;"><path d="M6 9l6 6 6-6"/></svg>
@@ -436,17 +425,10 @@ html[data-theme="light"] .theme-knob{transform:translateX(15px);background:var(-
   </div>
 </div>
 
-<!-- WBS FILTER MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="e=>{if(e.target===this)closeWBSModal();}">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-head"><h2>Filter by Folder (WBS)</h2><button class="modal-close" onclick="closeWBSModal()">×</button></div>
-    <div class="modal-search"><input type="text" id="modal-search" placeholder="Search folders…" oninput="renderModalList()"/></div>
-    <div class="modal-list" id="modal-list"></div>
-    <div class="modal-foot">
-      <button class="mf-btn" onclick="clearWBSFilter()">Clear all</button>
-      <button class="mf-btn primary" onclick="applyWBSFilter()">Apply filter</button>
-    </div>
-  </div>
+<!-- WBS FOLDER DROPDOWN -->
+<div class="wbs-dropdown hidden" id="wbs-dropdown">
+  <div class="modal-search"><input type="text" id="wbs-dd-search" placeholder="Search folders…" oninput="renderWBSDropdownList()"/></div>
+  <div class="modal-list" id="wbs-dd-list"></div>
 </div>
 
 <!-- TOOLTIP -->
@@ -463,7 +445,7 @@ let taskMap={},wbsMap={},predsMap={},succsMap={};
 let wbsTree=[],expandedWBS=new Set();
 let visibleRows=[],rowTaskIdx={};
 let searchQ='',statusF='',typeF='';
-let selectedWBS=new Set(),pendingWBS=new Set();
+let selectedWBS=new Set();
 let sortCol=null,sortDir=1;
 let zoom='month',visStart=null,visEnd=null;
 let pendingData=null,syncing=false,panActive=false;
@@ -522,12 +504,13 @@ function parseAndShow(text,filename){
   const types=[...new Set(allTasks.map(t=>t.task_type).filter(Boolean))];
   const ts=document.getElementById('t-type');ts.innerHTML='<option value="">All types</option>';
   types.forEach(tp=>{const o=document.createElement('option');o.value=tp;o.textContent=fType(tp);ts.appendChild(o);});
-  buildWBSTree();selectedWBS=new Set();pendingWBS=new Set();
+  buildWBSTree();selectedWBS=new Set();
   wbsTree.forEach(r=>expandedWBS.add(r.wbs_id));
   document.getElementById('landing').style.display='none';
   document.getElementById('app').style.display='flex';
   initScrollSync();initPan();initPanelResize();
   render();
+  openWBSDropdown();
 }
 
 // ── WBS TREE ──────────────────────────────────────────
@@ -546,38 +529,56 @@ function rollup(node){
 }
 function descIds(wbsId){const ids=new Set();function c(id){ids.add(id);allWBS.filter(w=>w.parent_wbs_id===id).forEach(w=>c(w.wbs_id));}c(wbsId);return ids;}
 
-// ── WBS FILTER MODAL ──────────────────────────────────
-function openWBSModal(){pendingWBS=new Set(selectedWBS);document.getElementById('modal-search').value='';renderModalList();document.getElementById('modal-overlay').classList.add('open');}
-function closeWBSModal(){document.getElementById('modal-overlay').classList.remove('open');}
-function renderModalList(){
-  const q=document.getElementById('modal-search').value.toLowerCase();
-  const list=document.getElementById('modal-list');list.innerHTML='';
+// ── WBS FOLDER DROPDOWN (single-select, empty folders hidden) ──
+function toggleWBSDropdown(){
+  document.getElementById('wbs-dropdown').classList.contains('hidden')?openWBSDropdown():closeWBSDropdown();
+}
+function openWBSDropdown(){
+  const btn=document.getElementById('wbs-pill-btn'),dd=document.getElementById('wbs-dropdown');
+  const r=btn.getBoundingClientRect();
+  dd.style.top=(r.bottom+6)+'px';dd.style.left=r.left+'px';
+  dd.classList.remove('hidden');
+  document.getElementById('wbs-dd-search').value='';
+  renderWBSDropdownList();
+}
+function closeWBSDropdown(){document.getElementById('wbs-dropdown').classList.add('hidden');}
+document.addEventListener('click',e=>{
+  const dd=document.getElementById('wbs-dropdown');
+  if(dd&&!dd.classList.contains('hidden')&&!e.target.closest('#wbs-dropdown')&&!e.target.closest('#wbs-pill-btn'))closeWBSDropdown();
+});
+function renderWBSDropdownList(){
+  const q=document.getElementById('wbs-dd-search').value.toLowerCase();
+  const list=document.getElementById('wbs-dd-list');list.innerHTML='';
+  const allItem=document.createElement('div');allItem.className='mli'+(selectedWBS.size===0?' sel':'');
+  allItem.innerHTML=`<span class="mli-name">All folders</span><span class="mli-cnt">${allTasks.length} ▸</span>`;
+  allItem.addEventListener('click',()=>selectWBS(null));
+  list.appendChild(allItem);
   function addN(node,depth){
+    const r=rollup(node);
+    if(r.tasks.length===0)return; // hide folders with no activities (and their empty subtree)
     const nm=(node.wbs_name||'').toLowerCase(),cd=(node.wbs_short_name||'').toLowerCase();
-    if(q&&!nm.includes(q)&&!cd.includes(q)&&!node.children.some(c=>nodeMatch(c,q)))return;
-    const r=rollup(node);const sel=pendingWBS.has(node.wbs_id);
-    const item=document.createElement('div');item.className='mli'+(sel?' sel':'');item.dataset.id=node.wbs_id;
-    const indent=document.createElement('span');indent.style.cssText=`width:${depth*14+4}px;display:inline-block;flex-shrink:0;`;
-    const cb=document.createElement('input');cb.type='checkbox';cb.checked=sel;
-    cb.addEventListener('change',()=>{if(cb.checked)pendingWBS.add(node.wbs_id);else pendingWBS.delete(node.wbs_id);item.classList.toggle('sel',cb.checked);});
-    const nm2=document.createElement('span');nm2.className='mli-name';nm2.textContent=node.wbs_name||node.wbs_short_name||node.wbs_id;nm2.title=nm2.textContent;
-    const cd2=document.createElement('span');cd2.className='mli-code';cd2.textContent=node.wbs_short_name||'';
-    const cnt=document.createElement('span');cnt.className='mli-cnt';cnt.textContent=r.tasks.length+' ▸';
-    item.appendChild(indent);item.appendChild(cb);item.appendChild(nm2);item.appendChild(cd2);item.appendChild(cnt);
-    item.addEventListener('click',e=>{if(e.target===cb)return;cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));});
-    list.appendChild(item);
+    if(!q||nm.includes(q)||cd.includes(q)||node.children.some(c=>nodeMatch(c,q))){
+      const sel=selectedWBS.has(node.wbs_id);
+      const item=document.createElement('div');item.className='mli'+(sel?' sel':'');item.dataset.id=node.wbs_id;
+      const indent=document.createElement('span');indent.style.cssText=`width:${depth*14+4}px;display:inline-block;flex-shrink:0;`;
+      const nm2=document.createElement('span');nm2.className='mli-name';nm2.textContent=node.wbs_name||node.wbs_short_name||node.wbs_id;nm2.title=nm2.textContent;
+      const cd2=document.createElement('span');cd2.className='mli-code';cd2.textContent=node.wbs_short_name||'';
+      const cnt=document.createElement('span');cnt.className='mli-cnt';cnt.textContent=r.tasks.length+' ▸';
+      item.appendChild(indent);item.appendChild(nm2);item.appendChild(cd2);item.appendChild(cnt);
+      item.addEventListener('click',()=>selectWBS(node.wbs_id));
+      list.appendChild(item);
+    }
     node.children.forEach(c=>addN(c,depth+1));
   }
   wbsTree.forEach(r=>addN(r,0));
 }
 function nodeMatch(n,q){if((n.wbs_name||'').toLowerCase().includes(q)||(n.wbs_short_name||'').toLowerCase().includes(q))return true;return n.children.some(c=>nodeMatch(c,q));}
-function applyWBSFilter(){selectedWBS=new Set(pendingWBS);closeWBSModal();updateWBSPill();applyFilters();}
-function clearWBSFilter(){selectedWBS=new Set();pendingWBS=new Set();closeWBSModal();updateWBSPill();applyFilters();}
+function selectWBS(id){selectedWBS=id?new Set([id]):new Set();updateWBSPill();applyFilters();closeWBSDropdown();}
 function updateWBSPill(){
   const btn=document.getElementById('wbs-pill-btn'),lbl=document.getElementById('wbs-pill-lbl');
   btn.classList.toggle('active',selectedWBS.size>0);
   if(selectedWBS.size===0){lbl.textContent='All folders';}
-  else{const names=[...selectedWBS].map(id=>{const w=wbsMap[id];return w?(w.wbs_short_name||w.wbs_name):id;});lbl.textContent=names.length===1?names[0]:names.length+' folders';}
+  else{const id=[...selectedWBS][0];const w=wbsMap[id];lbl.textContent=w?(w.wbs_short_name||w.wbs_name):id;}
 }
 
 // ── VISIBLE ROWS ──────────────────────────────────────
@@ -955,6 +956,7 @@ function exportCSV(){
 // ── RESET ─────────────────────────────────────────────
 function resetApp(){
   allTasks=[];allWBS=[];allPreds=[];taskMap={};wbsMap={};predsMap={};succsMap={};wbsTree=[];expandedWBS=new Set();visibleRows=[];selectedWBS=new Set();pendingData=null;sortCol=null;sortDir=1;
+  closeWBSDropdown();
   document.getElementById('app').style.display='none';document.getElementById('landing').style.display='flex';fi.value='';vBtn.disabled=true;
   dz.querySelector('.dz-title').textContent='Click or drag .xer file here';dz.querySelector('.dz-sub').textContent='Parsed entirely in your browser — nothing uploaded';
 }
